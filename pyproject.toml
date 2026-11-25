@@ -1,0 +1,29 @@
+[project]
+name = "flat-booking"
+version = "0.1.0"
+description = "Telegram-бот для бронирования музыкальной студии"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.33,<4",
+    "sqlalchemy[asyncio]>=2.0.38,<3",
+    "aiosqlite>=0.21,<1",
+    "alembic>=1.15,<2",
+    "apscheduler>=3.11,<4",
+    "pydantic-settings>=2.8,<3",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3,<10", "pytest-asyncio>=1,<2", "ruff>=0.11,<1"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP"]

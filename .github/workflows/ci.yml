@@ -1,0 +1,51 @@
+name: CI
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: '0.13.8'
+          cache-dependency-glob: uv.lock
+      - name: Install locked dependencies
+        run: uv sync --locked --python ${{ matrix.python-version }}
+      - name: Check lint
+        run: uv run --no-sync ruff check .
+      - name: Check formatting
+        run: uv run --no-sync ruff format --check .
+      - name: Run tests
+        run: uv run --no-sync pytest
+      - name: Verify migrations
+        run: |
+          temp_db_dir="$(mktemp -d "${RUNNER_TEMP}/flat-booking.XXXXXX")"
+          trap 'rm -rf -- "$temp_db_dir"' EXIT
+          export DATABASE_URL="sqlite+aiosqlite:///${temp_db_dir}/ci.sqlite"
+          uv run --no-sync alembic upgrade head
+          uv run --no-sync alembic check
+
+  docker:
+    name: Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Build image
+        run: docker build --tag flat-booking:ci .

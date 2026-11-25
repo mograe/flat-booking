@@ -1,0 +1,52 @@
+# Environment
+.env
+.env.*
+.envrc
+!/.env.example
+*.pem
+*.key
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Database and local data
+/data/*
+!/data/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+*.db-*
+*.sqlite-*
+*.sqlite3-*
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Logs
+*.log
+*.log.*
+logs/
+
+# IDE
+.idea/
+.vscode/
+
+# Backups
+backup/
+backups/
+*.bak
+*.bak.*
+*.backup
+*.backup.*
+*.dump
+*.sql.gz
